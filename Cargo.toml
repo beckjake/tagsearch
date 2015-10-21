@@ -1,0 +1,14 @@
+[package]
+name = "tagsearch"
+version = "0.0.1"
+authors = ["Jacob Beck <beckjake@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/beckjake/tagsearch-rs"
+repository = "https://github.com/beckjake/tagsearch-rs"
+documentation = "https://github.com/beckjake/tagsearch-rs"
+description = "Fooling around with id3 tags"
+
+
+[dependencies]
+id3 = "*"
