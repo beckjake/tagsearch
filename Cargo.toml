@@ -11,4 +11,5 @@ description = "Fooling around with id3 tags"
 
 
 [dependencies]
-id3 = "*"
+id3 = { git = "https://github.com/beckjake/rust-id3" }
+rusqlite = "*"
