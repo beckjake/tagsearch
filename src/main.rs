@@ -228,24 +228,33 @@ fn store_tag(db: &SqliteConnection, mp3: &PathBuf) -> Result<DBTag, Mp3Error> {
 }
 
 
+fn populate_db_from_dir(db: &SqliteConnection, mp3s: &mut DirectoryWalker) -> Result<Vec<DBTag>, Mp3Error> {
+    // can't just loop over it with for, because the borrow checker gets all
+    // upset about me using it later to access the errors.
+    let mut found: Vec<DBTag> = Vec::new();
+    loop {
+        match mp3s.next() {
+            Some(mp3) => {
+                let tag = try!(Tag::read_from_path(&mp3));
+                found.push(try!(DBTag::insert(&db, tag, &mp3)));
+                ()
+            },
+            None => break,
+        };
+    }
+
+    Ok(found)
+}
+
+
+
+
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
     let db = SqliteConnection::open("test.db").unwrap();
     DBTag::create(&db).unwrap();
     for arg in args {
         let mut mp3s = DirectoryWalker::new(PathBuf::from(&arg));
-        // can't just loop over it with for, because the borrow checker gets all
-        // upset about me using it later to access the errors.
-        loop {
-            match mp3s.next() {
-                Some(mp3) => {
-                    store_tag(&db, &mp3).unwrap()
-                },
-                None => break,
-            };
-        }
-        for error in mp3s.errors {
-            println!("error: {:?}", error);
-        }
+        populate_db_from_dir(&db, &mut mp3s).unwrap();
     }
 }
